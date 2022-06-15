@@ -1,0 +1,28 @@
+{
+  "name": "node-red-context-mongodb",
+  "version": "0.0.1",
+  "author": {
+    "name": "Chris Rahmé",
+    "email": "chris.rahme@hotmail.com",
+    "url": "chrisrahme.netlify.app",
+    "github": "chrisrahme"
+  },
+  "description": "A Node-RED Context store plugin backed by MongoDB",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ChrisRahme/node-red-context-mongo.git"
+  },
+  "dependencies": {
+    "@node-red/util": "^2.2.2",
+    "mongoose": "^6.3.8",
+    "redis": "^2.8.0"
+  },
+  "keywords": [
+    "node-red",
+    "mongodb"
+  ],
+  "engines": {
+    "node": ">=8"
+  }
+}
