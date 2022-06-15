@@ -104,7 +104,7 @@ MongoContext.prototype.open = function () {
     }
 
     if (typeof this['host'] === 'string') {
-        uri += `${this['host']}:${this['port']}/${this['database']}`
+        uri += `${this['host']}:${this['port']}`
     } else if (Array.isArray(this['host'])) {
         for (let i = 0; i < this['host'].length; i++) {
             uri += `${this['host'][i]}:${this['port'][i]}`
@@ -112,6 +112,7 @@ MongoContext.prototype.open = function () {
         }
     }
 
+    uri += `/${this['database']}`
 
     if (this['options']) {
         uri += `?${this['options']}`
@@ -130,7 +131,7 @@ MongoContext.prototype.open = function () {
         })
 
         this['client'].once('open', () => {
-            console.log('Connected to MongoDB')
+            console.log('Connected to MongoDB Context at ' + uri)
             resolve()
         })
     })
