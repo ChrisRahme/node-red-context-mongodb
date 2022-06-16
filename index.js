@@ -119,14 +119,16 @@ MongoContext.prototype.open = function () {
     }
 
     return new Promise((resolve, reject) => {
-        // https://arunrajeevan.medium.com/understanding-mongoose-connection-options-2b6e73d96de1
-        mongoose.connect(uri, {
-            socketTimeoutMS: 60 * 1000,
+        this['client'] = mongoose.connect(uri, {
+            socketTimeoutMS: 60000,
+            keepAlive: true,
+            keepAliveInitialDelay: 300000,
         })
 
         this['client'] = mongoose.connection
 
         this['client'].on('error', (err) => {
+            console.error('Failed to connect to MongoDB Context at ' + uri)
             reject(err)
         })
 
@@ -144,8 +146,9 @@ MongoContext.prototype.open = function () {
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
 MongoContext.prototype.close = function () {
+    // disconnect mongoose
     return new Promise((resolve, reject) => {
-        this['client'].disconnect(err => {
+        this['client'].close(true, err => {
             if (err) {
                 reject(err)
             } else {
