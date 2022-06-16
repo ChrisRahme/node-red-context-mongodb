@@ -95,6 +95,8 @@ function evaluateFunctions(obj) {
  * @returns {Promise} A Promise that resolves when the store is ready for access.
  */
 MongoContext.prototype.open = function () {
+    console.log('[MONGODB CONTEXT] Opening MongoDB Context')
+
     let uri = 'mongodb://'
 
     if (this['username'] && this['password']) {
@@ -129,6 +131,7 @@ MongoContext.prototype.open = function () {
 
         this['client'].on('error', (err) => {
             console.error('[MONGODB CONTEXT] Failed to connect to MongoDB Context at ' + uri)
+            console.error(err)
             reject(err)
         })
 
@@ -151,8 +154,11 @@ MongoContext.prototype.close = function () {
     return new Promise((resolve, reject) => {
         this['client'].close(true, err => {
             if (err) {
+                console.error('[MONGODB CONTEXT] Failed to close MongoDB Context')
+                console.error(err)
                 reject(err)
             } else {
+                console.log('[MONGODB CONTEXT] Closed MongoDB Context')
                 resolve()
             }
         })
@@ -191,6 +197,8 @@ MongoContext.prototype.get = function (scope, key, callback) {
             value: String
         }).find(query, projection, options, (err, docs) => {
             if (err) {
+                console.error('[MONGODB CONTEXT] Failed to get key values from MongoDB Context')
+                console.error(err)
                 callback(err)
             } else {
                 const values = evaluateFunctions(docs.map(doc => doc['value']))
@@ -248,6 +256,8 @@ MongoContext.prototype.set = function (scope, key, value, callback) {
             value: String
         }).bulkWrite(pairs, options, (err, result) => {
             if (err) {
+                console.error('[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
+                console.error(err)
                 callback(err)
             } else {
                 callback(null)
@@ -279,6 +289,8 @@ MongoContext.prototype.keys = function (scope, callback) {
             value: String
         }).find({}, {_id: true, value: false}, {}, (err, docs) => {
             if (err) {
+                console.error('[MONGODB CONTEXT] Failed to find keys from MongoDB Context')
+                console.error(err)
                 callback(err)
             } else {
                 const values = docs.map(doc => doc['_id'])
@@ -286,6 +298,8 @@ MongoContext.prototype.keys = function (scope, callback) {
             }
         })
     } catch (err) {
+        console.error('[MONGODB CONTEXT] Failed to get keys from MongoDB Context')
+        console.error(err)
         callback(err)
     }
 }
@@ -305,6 +319,8 @@ MongoContext.prototype.delete = function (scope) {
             value: String
         }).deleteMany({}, (err, result) => {
             if (err) {
+                console.error('[MONGODB CONTEXT] Failed to delete scope from MongoDB Context')
+                console.error(err)
                 reject(err)
             } else {
                 resolve()
@@ -331,16 +347,17 @@ MongoContext.prototype.clean = function (activeNodes) {
 
             if (inactiveNodes.length > 0) {
                 const promises = inactiveNodes.map(collection => this.delete(collection))
-                Promise.all(promises).then(
-                    () => resolve()
-                ).catch(
-                    err => reject(err)
-                )
+                Promise.all(promises).then(function () {
+                    resolve()
+                }).catch(function (err) {
+                    console.error('[MONGODB CONTEXT] Failed to clean MongoDB Context')
+                    console.error(err)
+                    reject(err)
+                })
             } else {
                 resolve()
             }
         })
-
     })
 }
 
