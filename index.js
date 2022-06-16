@@ -313,6 +313,7 @@ MongoContext.prototype.keys = function (scope, callback) {
  */
 MongoContext.prototype.delete = function (scope) {
     const collection = scope
+
     return new Promise((resolve, reject) => {
         mongoose.model(collection, {
             _id: String,
@@ -341,7 +342,11 @@ MongoContext.prototype.delete = function (scope) {
 MongoContext.prototype.clean = function (activeNodes) {
     return new Promise((resolve, reject) => {
         const collections = this['client'].db.listCollections().toArray((err, collections) => {
-            if (err) reject(err)
+            if (err) {
+                console.error('[MONGODB CONTEXT] Failed to list MongoDB Context')
+                console.error(err)
+                reject(err)
+            }
             
             const inactiveNodes = collections.filter(collection => !activeNodes.includes(collection))
 
