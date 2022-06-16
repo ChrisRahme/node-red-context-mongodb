@@ -30,7 +30,12 @@ function MongoContext(config) {
     this['password'] = config['password'] || '',
 
     this['client']   = null // mongoose.connection
-    this['models']   = {}   // mongoose.model
+    this['models']   = {
+        '_collections': mongoose.model('_collections', {
+            _id  : String,
+            date : mongoose.Schema.Types.Date
+        })
+    }   // mongoose.model
 }
 
 
@@ -104,6 +109,8 @@ MongoContext.prototype.getModel = function(collection) {
             _id   : String,
             value : mongoose.Schema.Types.Mixed
         })
+
+        this.set('_collections', collection, Date.now(), null)
     }
 
     return this['models'][collection]
@@ -254,7 +261,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
  * @param {function?}      callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.set = function(scope, key, value, callback) {
-    console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope} !!!!!!!!!!!!!!!!!!!!tem2p`)
+    console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function, got ' + typeof callback)
@@ -290,7 +297,6 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             ordered: false,
             skipValidation: true,
         }
-        console.log('teststststststs options')
         this.getModel(scope).bulkWrite(pairs, options, (err, result) => {
             if (err) {
                 console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
@@ -302,7 +308,6 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
                 }
             } else {
                 console.log('\n[MONGODB CONTEXT] Set key/value pair in MongoDB Context')
-                console.log(result)
             }
         })
     } catch (err) {
@@ -395,18 +400,26 @@ MongoContext.prototype.clean = function(activeNodes) {
     console.log('\n[MONGODB CONTEXT] Cleaning MongoDB Context')
 
     return new Promise((resolve, reject) => {
-        const collections = this['client'].db.listCollections().toArray((err, collections) => {
+        var collections = []
+        
+        this['client'].db.listCollections().toArray((err, result) => {
             if (err) {
                 console.error('\n[MONGODB CONTEXT] Failed to list MongoDB Context')
                 console.error(err)
                 reject(err)
             }
-            
-            const inactiveNodes = collections.filter(collection => !activeNodes.includes(collection))
 
+            collections = result
+        })
+        
+        if (collections.length > 0) {
+            const inactiveNodes = collections.filter(collection => !activeNodes.includes(collection))
+    
             if (inactiveNodes.length > 0) {
                 const promises = inactiveNodes.map(collection => this.delete(collection))
+    
                 Promise.all(promises).then(function() {
+                    console.log(`[MONGODB CONTEXT] Cleaning collections ${inactiveNodes} from ${collections}`)
                     resolve()
                 }).catch(function(err) {
                     console.error('\n[MONGODB CONTEXT] Failed to clean MongoDB Context')
@@ -416,7 +429,9 @@ MongoContext.prototype.clean = function(activeNodes) {
             } else {
                 resolve()
             }
-        })
+        } else {
+            resolve()
+        }
     })
 }
 
