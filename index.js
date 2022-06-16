@@ -46,7 +46,7 @@ function stringifyFunctions(obj) {
             if (typeof obj === 'function') {
                 obj = obj.toString()
             } else if (Array.isArray(obj)) {
-                obj = obj.map(stringifyFunctions)
+                obj = obj.map(x => stringifyFunctions(x))
             } else if (typeof obj === 'object') {
                 for (let key in obj) {
                     obj[key] = stringifyFunctions(obj[key])
@@ -78,7 +78,7 @@ function evaluateFunctions(obj) {
                     obj = old_obj
                 }
             } else if (Array.isArray(obj)) {
-                obj = obj.map(evaluateFunctions)
+                obj = obj.map(x => evaluateFunctions(x))
             } else if (typeof obj === 'object') {
                 for (let key in obj) {
                     obj[key] = evaluateFunctions(obj[key])
@@ -300,7 +300,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
  * @param {function?} callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.keys = function(scope, callback) {
-    console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope}`)
+    console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope} 111111111111`)
 
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function');
