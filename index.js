@@ -289,7 +289,13 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             }
         })
     } catch (err) {
-        callback(err)
+        try {
+            callback(err)
+        } catch (err2) {
+            console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
+            console.error(err)
+            console.error(err2)
+        }
     }
 }
 
