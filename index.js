@@ -246,7 +246,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
  * @param {function?}      callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.set = function(scope, key, value, callback) {
-    console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope} !!!!!!!!!!!!!!!!!!!!temp`)
+    console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope} !!!!!!!!!!!!!!!!!!!!tem2p`)
 
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function');
@@ -266,7 +266,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             for (let i = key.length; i < value.length; i++) key.push(null)
         }
 
-        console.log('Stringifyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy')
+        console.log('Stringifyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy!!!!!')
         const pairs = stringifyFunctions(key.map(function(k, i) {
             let _id = k.toString()
             let value = value[i]
