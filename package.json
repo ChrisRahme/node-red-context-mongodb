@@ -4,7 +4,7 @@
   "author": {
     "name": "Chris Rahmé",
     "email": "chris.rahme@hotmail.com",
-    "url": "chrisrahme.netlify.app",
+    "url": "https://chrisrahme.netlify.app",
     "github": "chrisrahme"
   },
   "description": "A Node-RED Context store plugin backed by MongoDB",
@@ -15,8 +15,7 @@
   },
   "dependencies": {
     "@node-red/util": "^2.2.2",
-    "mongoose": "^6.3.8",
-    "redis": "^2.8.0"
+    "mongoose": "^6.3.8"
   },
   "keywords": [
     "node-red",
