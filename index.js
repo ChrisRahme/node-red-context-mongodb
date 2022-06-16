@@ -225,7 +225,6 @@ MongoContext.prototype.get = function(scope, key, callback) {
                     callback(err)
                 } catch (err2) {
                     console.error(err)
-                    console.error(err2)
                 }
             } else {
                 const values = evaluateFunctions(docs.map(doc => doc['value']))
@@ -237,7 +236,6 @@ MongoContext.prototype.get = function(scope, key, callback) {
             callback(err)
         } catch (err2) {
             console.error(err)
-            console.error(err2)
         }
     }
 }
@@ -279,7 +277,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
         console.log('Stringifyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy!!!!!')
         const pairs = stringifyFunctions(key.map(function(k, i) {
             let _id = k.toString()
-            let val = val[i]
+            let val = value[i]
 
             return {_id, val}
         }))
@@ -295,7 +293,6 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
                     callback(err)
                 } catch (err2) {
                     console.error(err)
-                    console.error(err2)
                 }
             } else {
                 console.log('\n[MONGODB CONTEXT] Set key/value pair in MongoDB Context')
@@ -307,7 +304,6 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             callback(err)
         } catch (err2) {
             console.error(err)
-            console.error(err2)
         }
     }
 }
@@ -334,7 +330,11 @@ MongoContext.prototype.keys = function(scope, callback) {
             if (err) {
                 console.error('\n[MONGODB CONTEXT] Failed to find keys from MongoDB Context')
                 console.error(err)
-                callback(err)
+                try {
+                    callback(err)
+                } catch (err2) {
+                    console.error(err)
+                }
             } else {
                 const values = docs.map(doc => doc['_id'])
                 callback(null, values)
@@ -343,7 +343,11 @@ MongoContext.prototype.keys = function(scope, callback) {
     } catch (err) {
         console.error('\n[MONGODB CONTEXT] Failed to get keys from MongoDB Context')
         console.error(err)
-        callback(err)
+        try {
+            callback(err)
+        } catch (err2) {
+            console.error(err)
+        }
     }
 }
 
