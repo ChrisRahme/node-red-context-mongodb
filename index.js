@@ -290,7 +290,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             ordered: false,
             skipValidation: true,
         }
-
+        console.log('teststststststs options')
         this.getModel(scope).bulkWrite(pairs, options, (err, result) => {
             if (err) {
                 console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
