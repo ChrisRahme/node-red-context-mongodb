@@ -41,14 +41,18 @@ function MongoContext(config) {
  */
 function stringifyFunctions(obj) {
     if (!!obj) {
-        if (typeof obj === 'function') {
-            obj = obj.toString()
-        } else if (Array.isArray(obj)) {
-            obj = obj.map(stringifyFunctions)
-        } else if (typeof obj === 'object') {
-            for (let key in obj) {
-                obj[key] = stringifyFunctions(obj[key])
+        try {
+            if (typeof obj === 'function') {
+                obj = obj.toString()
+            } else if (Array.isArray(obj)) {
+                obj = obj.map(stringifyFunctions)
+            } else if (typeof obj === 'object') {
+                for (let key in obj) {
+                    obj[key] = stringifyFunctions(obj[key])
+                }
             }
+        } catch (err) {
+            console.error(err)
         }
     }
 
@@ -137,15 +141,7 @@ MongoContext.prototype.open = function () {
 
         this['client'].once('open', () => {
             console.log('[MONGODB CONTEXT] Connected to MongoDB Context at ' + uri)
-            console.log('1' * 100)
-            try {
-                console.log('[MONGODB CONTEXT] Trying resolve')
-                resolve()
-            } catch (e) {
-                console.error('[MONGODB CONTEXT] Failed to resolve')
-                console.error(e)
-                reject(e)
-            }
+            resolve()
             console.log('[MONGODB CONTEXT] MongoDB Context resolved')
         })
     })
