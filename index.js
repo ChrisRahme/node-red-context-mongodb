@@ -28,9 +28,10 @@ function MongoContext(config) {
     this['database'] = config['database'] || 'context',
     this['username'] = config['username'] || '',
     this['password'] = config['password'] || '',
-    this['client']   = null // mongoose.connection
-}
 
+    this['client']   = null // mongoose.connection
+    this['models']   = {}   // mongoose.model
+}
 
 
 /**
@@ -90,6 +91,23 @@ function evaluateFunctions(obj) {
 }
 
 
+/**
+ * Retrieves the mongoose model for the given collection.
+ * If the model does not exist, it is created.
+ * 
+ * @param {string}           collection - The collection name.
+ * @returns {mongoose.Model} The mongoose model.
+ */
+MongoContext.prototype.getModel = function(collection) {
+    if (!instance['models'][collection]) {
+        instance['models'][collection] = mongoose.model(collection, {
+            _id   : String,
+            value : mongoose.Schema.Types.Mixed
+        })
+    }
+
+    return instance['models'][collection]
+}
 
 
 
@@ -98,7 +116,7 @@ function evaluateFunctions(obj) {
  * 
  * @returns {Promise} A Promise that resolves when the store is ready for access.
  */
-MongoContext.prototype.open = function () {
+MongoContext.prototype.open = function() {
     console.log('[MONGODB CONTEXT] Opening MongoDB Context')
 
     let uri = 'mongodb://'
@@ -153,7 +171,7 @@ MongoContext.prototype.open = function () {
  * 
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
-MongoContext.prototype.close = function () {
+MongoContext.prototype.close = function() {
     console.log('[MONGODB CONTEXT] Closing MongoDB Context')
     
     return new Promise((resolve, reject) => {
@@ -182,7 +200,7 @@ MongoContext.prototype.close = function () {
  * @param {string | any[]} key      - The key, or array of keys, to return the value(s) for.
  * @param {function?}      callback - A callback function to invoke with the key value.
  */
-MongoContext.prototype.get = function (scope, key, callback) {
+MongoContext.prototype.get = function(scope, key, callback) {
     console.log(`[MONGODB CONTEXT] Getting value for key ${key} in scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
@@ -199,10 +217,7 @@ MongoContext.prototype.get = function (scope, key, callback) {
         const projection = {_id: false, value: true}
         const options    = {limit: keys.length}
 
-        mongoose.model(scope, {
-            _id: String,
-            value: String
-        }).find(query, projection, options, (err, docs) => {
+        this.getModel(scope).find(query, projection, options, (err, docs) => {
             if (err) {
                 console.error('[MONGODB CONTEXT] Failed to get key values from MongoDB Context')
                 console.error(err)
@@ -230,7 +245,7 @@ MongoContext.prototype.get = function (scope, key, callback) {
  * @param {any}            value    - The value, or array of values.
  * @param {function?}      callback - A callback function to invoke with the key value.
  */
-MongoContext.prototype.set = function (scope, key, value, callback) {
+MongoContext.prototype.set = function(scope, key, value, callback) {
     console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
@@ -251,8 +266,8 @@ MongoContext.prototype.set = function (scope, key, value, callback) {
             for (let i = key.length; i < value.length; i++) key.push(null)
         }
 
-        const pairs = stringifyFunctions(key.map(function (k, i) {
-            let _id = k
+        const pairs = stringifyFunctions(key.map(function(k, i) {
+            let _id = k.toString()
             let value = value[i]
 
             return {_id, value}
@@ -260,10 +275,7 @@ MongoContext.prototype.set = function (scope, key, value, callback) {
 
         const options = {upsert: true}
 
-        mongoose.model(scope, {
-            _id: String,
-            value: String
-        }).bulkWrite(pairs, options, (err, result) => {
+        this.getModel(scope).bulkWrite(pairs, options, (err, result) => {
             if (err) {
                 console.error('[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
                 console.error(err)
@@ -287,7 +299,7 @@ MongoContext.prototype.set = function (scope, key, value, callback) {
  * @param {string}    scope    - The scope of the key.
  * @param {function?} callback - A callback function to invoke with the key value.
  */
-MongoContext.prototype.keys = function (scope, callback) {
+MongoContext.prototype.keys = function(scope, callback) {
     console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
@@ -295,10 +307,7 @@ MongoContext.prototype.keys = function (scope, callback) {
     }
 
     try {
-        mongoose.model(scope, {
-            _id: String,
-            value: String
-        }).find({}, {_id: true, value: false}, {}, (err, docs) => {
+        this.getModel(scope).find({}, {_id: true, value: false}, {}, (err, docs) => {
             if (err) {
                 console.error('[MONGODB CONTEXT] Failed to find keys from MongoDB Context')
                 console.error(err)
@@ -322,16 +331,13 @@ MongoContext.prototype.keys = function (scope, callback) {
  * @param   {string}  scope - The scope to delete.
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
-MongoContext.prototype.delete = function (scope) {
+MongoContext.prototype.delete = function(scope) {
     console.log(`[MONGODB CONTEXT] Deleting scope ${scope}`)
 
     const collection = scope
 
     return new Promise((resolve, reject) => {
-        mongoose.model(collection, {
-            _id: String,
-            value: String
-        }).deleteMany({}, (err, result) => {
+        this.getModel(scope).deleteMany({}, (err, result) => {
             if (err) {
                 console.error('[MONGODB CONTEXT] Failed to delete scope from MongoDB Context')
                 console.error(err)
@@ -352,9 +358,9 @@ MongoContext.prototype.delete = function (scope) {
  * @param   {any[]}   activeNodes - A list of all node/flow ids that are still active
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
-MongoContext.prototype.clean = function (activeNodes) {
+MongoContext.prototype.clean = function(activeNodes) {
     console.log('[MONGODB CONTEXT] Cleaning MongoDB Context')
-    
+
     return new Promise((resolve, reject) => {
         const collections = this['client'].db.listCollections().toArray((err, collections) => {
             if (err) {
@@ -367,9 +373,9 @@ MongoContext.prototype.clean = function (activeNodes) {
 
             if (inactiveNodes.length > 0) {
                 const promises = inactiveNodes.map(collection => this.delete(collection))
-                Promise.all(promises).then(function () {
+                Promise.all(promises).then(function() {
                     resolve()
-                }).catch(function (err) {
+                }).catch(function(err) {
                     console.error('[MONGODB CONTEXT] Failed to clean MongoDB Context')
                     console.error(err)
                     reject(err)
