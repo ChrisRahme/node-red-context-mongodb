@@ -236,12 +236,10 @@ MongoContext.prototype.get = function(scope, key, callback) {
             } else {
                 const values = evaluateFunctions(docs.map(doc => doc['value']))
 
-                console.log(`[MONGODB CONTEXT] Found values for keys ${keys}:`)
-                console.log(values)
-                console.log('---------')
+                console.log(`[MONGODB CONTEXT] Found values for keys ${keys}`)
 
                 try {
-                    callback(null, ...values)
+                    callback(null, values)
                 } catch (err2) {
                     console.error(`[MONGODB CONTEXT] Error after get success, callback ${callback}`)
                     console.error(err2)
