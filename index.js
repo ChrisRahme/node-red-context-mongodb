@@ -99,14 +99,14 @@ function evaluateFunctions(obj) {
  * @returns {mongoose.Model} The mongoose model.
  */
 MongoContext.prototype.getModel = function(collection) {
-    if (!instance['models'][collection]) {
-        instance['models'][collection] = mongoose.model(collection, {
+    if (!this['models'].hasOwnProperty(collection)) {
+        this['models'][collection] = mongoose.model(collection, {
             _id   : String,
             value : mongoose.Schema.Types.Mixed
         })
     }
 
-    return instance['models'][collection]
+    return this['models'][collection]
 }
 
 
