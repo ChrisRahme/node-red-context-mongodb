@@ -138,6 +138,7 @@ MongoContext.prototype.open = function () {
         this['client'].once('open', () => {
             console.log('[MONGODB CONTEXT] Connected to MongoDB Context at ' + uri)
             resolve()
+            console.log('[MONGODB CONTEXT] MongoDB Context resolved')
         })
     })
 }
