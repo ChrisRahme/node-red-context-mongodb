@@ -220,15 +220,25 @@ MongoContext.prototype.get = function(scope, key, callback) {
         this.getModel(scope).find(query, projection, options, (err, docs) => {
             if (err) {
                 console.error('\n[MONGODB CONTEXT] Failed to get key values from MongoDB Context')
-                console.error(err)
-                callback(err)
+
+                try {
+                    callback(err)
+                } catch (err2) {
+                    console.error(err)
+                    console.error(err2)
+                }
             } else {
                 const values = evaluateFunctions(docs.map(doc => doc['value']))
-                callback(null, values)
+                callback(null, ...values)
             }
         })
     } catch (err) {
-        callback(err)
+        try {
+            callback(err)
+        } catch (err2) {
+            console.error(err)
+            console.error(err2)
+        }
     }
 }
 
@@ -269,9 +279,9 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
         console.log('Stringifyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy!!!!!')
         const pairs = stringifyFunctions(key.map(function(k, i) {
             let _id = k.toString()
-            let value = value[i]
+            let val = val[i]
 
-            return {_id, value}
+            return {_id, val}
         }))
         console.log('Stringified')
 
@@ -280,11 +290,15 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
         this.getModel(scope).bulkWrite(pairs, options, (err, result) => {
             if (err) {
                 console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
-                console.error(err)
-                callback(err)
+
+                try {
+                    callback(err)
+                } catch (err2) {
+                    console.error(err)
+                    console.error(err2)
+                }
             } else {
                 console.log('\n[MONGODB CONTEXT] Set key/value pair in MongoDB Context')
-                // callback(null)
                 console.log(result)
             }
         })
@@ -292,11 +306,8 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
         try {
             callback(err)
         } catch (err2) {
-            console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
             console.error(err)
             console.error(err2)
-            console.error('Here is the callback')
-            console.error(callback.toString())
         }
     }
 }
