@@ -128,12 +128,12 @@ MongoContext.prototype.open = function () {
         this['client'] = mongoose.connection
 
         this['client'].on('error', (err) => {
-            console.error('Failed to connect to MongoDB Context at ' + uri)
+            console.error('[MONGODB CONTEXT] Failed to connect to MongoDB Context at ' + uri)
             reject(err)
         })
 
         this['client'].once('open', () => {
-            console.log('Connected to MongoDB Context at ' + uri)
+            console.log('[MONGODB CONTEXT] Connected to MongoDB Context at ' + uri)
             resolve()
         })
     })
@@ -146,7 +146,8 @@ MongoContext.prototype.open = function () {
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
 MongoContext.prototype.close = function () {
-    // disconnect mongoose
+    console.log('[MONGODB CONTEXT] Closing MongoDB Context')
+    
     return new Promise((resolve, reject) => {
         this['client'].close(true, err => {
             if (err) {
