@@ -274,13 +274,22 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             for (let i = key.length; i < value.length; i++) key.push(null)
         }
 
-        console.log('Stringifyyyy...')
         const pairs = stringifyFunctions(key.map(function(k, i) {
             return {'_id': k.toString(), 'value': value[i]}
-        }))
-        console.log('Stringified')
+        })).map(function(doc) {
+            return {
+                updateOne: {
+                    filter: {_id: doc['_id']},
+                    update: doc,
+                    upsert: true,
+                }
+            }
+        })
 
-        const options = {upsert: true}
+        const options = {
+            ordered: false,
+            skipValidation: true,
+        }
 
         this.getModel(scope).bulkWrite(pairs, options, (err, result) => {
             if (err) {
