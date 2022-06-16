@@ -274,12 +274,9 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             for (let i = key.length; i < value.length; i++) key.push(null)
         }
 
-        console.log('Stringifyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy!!!!!')
+        console.log('Stringifyyyy...')
         const pairs = stringifyFunctions(key.map(function(k, i) {
-            let _id = k.toString()
-            let val = value[i]
-
-            return {_id, val}
+            return {'_id': k.toString(), 'value': value[i]}
         }))
         console.log('Stringified')
 
