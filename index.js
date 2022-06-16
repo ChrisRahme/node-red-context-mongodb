@@ -234,7 +234,13 @@ MongoContext.prototype.get = function(scope, key, callback) {
                     console.error(err)
                 }
             } else {
-                const values = evaluateFunctions(docs.map(doc => doc['value']))
+                const results = evaluateFunctions(docs.map(doc => doc['value']))
+                const values  = []
+
+                keys.forEach(function (k) {
+                    values.push(results[k])
+                })
+
                 console.log(`[MONGODB CONTEXT] Found values for keys ${keys}:`)
                 console.log(values)
 
