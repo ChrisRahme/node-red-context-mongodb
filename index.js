@@ -238,6 +238,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
 
                 console.log(`[MONGODB CONTEXT] Found values for keys ${keys}:`)
                 console.log(values)
+                console.log('---------')
 
                 try {
                     callback(null, ...values)
