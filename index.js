@@ -117,7 +117,7 @@ MongoContext.prototype.getModel = function(collection) {
  * @returns {Promise} A Promise that resolves when the store is ready for access.
  */
 MongoContext.prototype.open = function() {
-    console.log('[MONGODB CONTEXT] Opening MongoDB Context')
+    console.log('\n[MONGODB CONTEXT] Opening MongoDB Context')
 
     let uri = 'mongodb://'
 
@@ -152,15 +152,15 @@ MongoContext.prototype.open = function() {
         this['client'] = mongoose.connection
 
         this['client'].on('error', (err) => {
-            console.error('[MONGODB CONTEXT] Failed to connect to MongoDB Context at ' + uri)
+            console.error('\n[MONGODB CONTEXT] Failed to connect to MongoDB Context at ' + uri)
             console.error(err)
             reject(err)
         })
 
         this['client'].once('open', () => {
-            console.log('[MONGODB CONTEXT] Connected to MongoDB Context at ' + uri)
+            console.log('\n[MONGODB CONTEXT] Connected to MongoDB Context at ' + uri)
             resolve()
-            console.log('[MONGODB CONTEXT] MongoDB Context resolved')
+            console.log('\n[MONGODB CONTEXT] MongoDB Context resolved')
         })
     })
 }
@@ -172,16 +172,16 @@ MongoContext.prototype.open = function() {
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
 MongoContext.prototype.close = function() {
-    console.log('[MONGODB CONTEXT] Closing MongoDB Context')
+    console.log('\n[MONGODB CONTEXT] Closing MongoDB Context')
     
     return new Promise((resolve, reject) => {
         this['client'].close(true, err => {
             if (err) {
-                console.error('[MONGODB CONTEXT] Failed to close MongoDB Context')
+                console.error('\n[MONGODB CONTEXT] Failed to close MongoDB Context')
                 console.error(err)
                 reject(err)
             } else {
-                console.log('[MONGODB CONTEXT] Closed MongoDB Context')
+                console.log('\n[MONGODB CONTEXT] Closed MongoDB Context')
                 resolve()
             }
         })
@@ -219,7 +219,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
 
         this.getModel(scope).find(query, projection, options, (err, docs) => {
             if (err) {
-                console.error('[MONGODB CONTEXT] Failed to get key values from MongoDB Context')
+                console.error('\n[MONGODB CONTEXT] Failed to get key values from MongoDB Context')
                 console.error(err)
                 callback(err)
             } else {
@@ -277,11 +277,13 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
 
         this.getModel(scope).bulkWrite(pairs, options, (err, result) => {
             if (err) {
-                console.error('[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
+                console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
                 console.error(err)
                 callback(err)
             } else {
-                callback(null)
+                console.log('\n[MONGODB CONTEXT] Set key/value pair in MongoDB Context')
+                // callback(null)
+                console.log(result)
             }
         })
     } catch (err) {
@@ -309,7 +311,7 @@ MongoContext.prototype.keys = function(scope, callback) {
     try {
         this.getModel(scope).find({}, {_id: true, value: false}, {}, (err, docs) => {
             if (err) {
-                console.error('[MONGODB CONTEXT] Failed to find keys from MongoDB Context')
+                console.error('\n[MONGODB CONTEXT] Failed to find keys from MongoDB Context')
                 console.error(err)
                 callback(err)
             } else {
@@ -318,7 +320,7 @@ MongoContext.prototype.keys = function(scope, callback) {
             }
         })
     } catch (err) {
-        console.error('[MONGODB CONTEXT] Failed to get keys from MongoDB Context')
+        console.error('\n[MONGODB CONTEXT] Failed to get keys from MongoDB Context')
         console.error(err)
         callback(err)
     }
@@ -339,7 +341,7 @@ MongoContext.prototype.delete = function(scope) {
     return new Promise((resolve, reject) => {
         this.getModel(scope).deleteMany({}, (err, result) => {
             if (err) {
-                console.error('[MONGODB CONTEXT] Failed to delete scope from MongoDB Context')
+                console.error('\n[MONGODB CONTEXT] Failed to delete scope from MongoDB Context')
                 console.error(err)
                 reject(err)
             } else {
@@ -359,12 +361,12 @@ MongoContext.prototype.delete = function(scope) {
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
 MongoContext.prototype.clean = function(activeNodes) {
-    console.log('[MONGODB CONTEXT] Cleaning MongoDB Context')
+    console.log('\n[MONGODB CONTEXT] Cleaning MongoDB Context')
 
     return new Promise((resolve, reject) => {
         const collections = this['client'].db.listCollections().toArray((err, collections) => {
             if (err) {
-                console.error('[MONGODB CONTEXT] Failed to list MongoDB Context')
+                console.error('\n[MONGODB CONTEXT] Failed to list MongoDB Context')
                 console.error(err)
                 reject(err)
             }
@@ -376,7 +378,7 @@ MongoContext.prototype.clean = function(activeNodes) {
                 Promise.all(promises).then(function() {
                     resolve()
                 }).catch(function(err) {
-                    console.error('[MONGODB CONTEXT] Failed to clean MongoDB Context')
+                    console.error('\n[MONGODB CONTEXT] Failed to clean MongoDB Context')
                     console.error(err)
                     reject(err)
                 })
