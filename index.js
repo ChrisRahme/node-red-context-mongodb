@@ -302,7 +302,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
  * @param {function?} callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.keys = function(scope, callback) {
-    console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope} 111111111111`)
+    console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function');
