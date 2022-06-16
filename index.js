@@ -235,6 +235,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
                 }
             } else {
                 const values = evaluateFunctions(docs.map(doc => doc['value']))
+                console.log(`[MONGODB CONTEXT] Found values for keys ${keys}" ${values}`)
                 callback(null, ...values)
             }
         })
@@ -411,6 +412,9 @@ MongoContext.prototype.clean = function(activeNodes) {
 
             collections = result
         })
+
+        console.log('COLLECZTIONS')
+        console.log(collections)
         
         if (collections.length > 0) {
             const inactiveNodes = collections.filter(collection => !activeNodes.includes(collection))
