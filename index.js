@@ -183,6 +183,8 @@ MongoContext.prototype.close = function () {
  * @param {function?}      callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.get = function (scope, key, callback) {
+    console.log(`[MONGODB CONTEXT] Getting value for key ${key} in scope ${scope}`)
+
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function');
     }
@@ -229,6 +231,8 @@ MongoContext.prototype.get = function (scope, key, callback) {
  * @param {function?}      callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.set = function (scope, key, value, callback) {
+    console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope}`)
+
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function');
     }
@@ -284,6 +288,8 @@ MongoContext.prototype.set = function (scope, key, value, callback) {
  * @param {function?} callback - A callback function to invoke with the key value.
  */
 MongoContext.prototype.keys = function (scope, callback) {
+    console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope}`)
+
     if (callback && typeof callback !== 'function') {
         throw new Error('Callback must be a function');
     }
@@ -317,6 +323,8 @@ MongoContext.prototype.keys = function (scope, callback) {
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
 MongoContext.prototype.delete = function (scope) {
+    console.log(`[MONGODB CONTEXT] Deleting scope ${scope}`)
+
     const collection = scope
 
     return new Promise((resolve, reject) => {
@@ -345,6 +353,8 @@ MongoContext.prototype.delete = function (scope) {
  * @returns {Promise} A Promise that resolves when the store is closed.
  */
 MongoContext.prototype.clean = function (activeNodes) {
+    console.log('[MONGODB CONTEXT] Cleaning MongoDB Context')
+    
     return new Promise((resolve, reject) => {
         const collections = this['client'].db.listCollections().toArray((err, collections) => {
             if (err) {
