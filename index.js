@@ -204,7 +204,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
     console.log(`[MONGODB CONTEXT] Getting value for key ${key} in scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
-        throw new Error('Callback must be a function');
+        throw new Error('Callback must be a function, got ' + typeof callback);
     }
 
     try {
@@ -249,7 +249,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
     console.log(`[MONGODB CONTEXT] Setting value for key ${key} in scope ${scope} !!!!!!!!!!!!!!!!!!!!tem2p`)
 
     if (callback && typeof callback !== 'function') {
-        throw new Error('Callback must be a function');
+        throw new Error('Callback must be a function, got ' + typeof callback)
     }
 
     try {
@@ -295,6 +295,7 @@ MongoContext.prototype.set = function(scope, key, value, callback) {
             console.error('\n[MONGODB CONTEXT] Failed to set key/value pair in MongoDB Context')
             console.error(err)
             console.error(err2)
+            console.error(callback)
         }
     }
 }
@@ -313,7 +314,7 @@ MongoContext.prototype.keys = function(scope, callback) {
     console.log(`[MONGODB CONTEXT] Getting keys for scope ${scope}`)
 
     if (callback && typeof callback !== 'function') {
-        throw new Error('Callback must be a function');
+        throw new Error('Callback must be a function, got ' + typeof callback);
     }
 
     try {
