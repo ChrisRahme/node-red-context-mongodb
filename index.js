@@ -235,7 +235,8 @@ MongoContext.prototype.get = function(scope, key, callback) {
                 }
             } else {
                 const values = evaluateFunctions(docs.map(doc => doc['value']))
-                console.log(`[MONGODB CONTEXT] Found values for keys ${keys}" ${values}`)
+                console.log(`[MONGODB CONTEXT] Found values for keys ${keys}:`)
+                console.log(values)
 
                 try {
                     callback(null, ...values)
