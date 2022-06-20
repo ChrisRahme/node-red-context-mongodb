@@ -239,7 +239,7 @@ MongoContext.prototype.get = function(scope, key, callback) {
                 console.log(`[MONGODB CONTEXT] Found values for keys ${keys}`)
 
                 try {
-                    callback(null, values)
+                    callback(null, ...values)
                 } catch (err2) {
                     console.error(`[MONGODB CONTEXT] Error after get success, callback ${callback}`)
                     console.error(err2)
@@ -420,9 +420,6 @@ MongoContext.prototype.clean = function(activeNodes) {
             collections = result
         })
 
-        console.log('COLLECZTIONS')
-        console.log(collections)
-        
         if (collections.length > 0) {
             const inactiveNodes = collections.filter(collection => !activeNodes.includes(collection))
     
